@@ -9,8 +9,9 @@ add_executable(cppbench
 )
 
 target_link_libraries(cppbench
-    benchmark::benchmark
     ${EXT_INSTALL_DIR}/lib/liblo.${LIBLO_LIBRARY_SUFFIX}
+    benchmark::benchmark
+    oscpack
 )
 
 add_dependencies(cppbench
