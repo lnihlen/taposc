@@ -1,6 +1,7 @@
 #include "benchmark/benchmark.h"
 #include "osc/OscOutboundPacketStream.h"
 #include "osc/OscReceivedElements.h"
+#include "oscpkt.hh"
 
 extern "C" {
 #include "lo/lo.h"
@@ -19,7 +20,7 @@ static void BM_liblo_serialize_empty(benchmark::State& state) {
     std::array<char, 64> buffer;
     for (auto _ : state) {
         lo_message message = lo_message_new();
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
     }
 }
@@ -29,7 +30,7 @@ static void BM_liblo_serialize_int32_zero(benchmark::State& state) {
     for (auto _ : state) {
         lo_message message = lo_message_new();
         lo_message_add_int32(message, 0);
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
     }
 }
@@ -41,7 +42,7 @@ static void BM_liblo_serialize_int32_series(benchmark::State& state) {
         for (int i = 0; i < 100; ++i) {
             lo_message_add_int32(message, i);
         }
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
     }
 }
@@ -51,7 +52,7 @@ static void BM_liblo_serialize_float_zero(benchmark::State& state) {
     for (auto _ : state) {
         lo_message message = lo_message_new();
         lo_message_add_float(message, 0.0f);
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
     }
 }
@@ -63,7 +64,7 @@ static void BM_liblo_serialize_float_series(benchmark::State& state) {
         for (int i = 0; i < 100; ++i) {
             lo_message_add_float(message, static_cast<float>(i));
         }
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
     }
 }
@@ -73,7 +74,7 @@ static void BM_liblo_serialize_string_short(benchmark::State& state) {
     for (auto _ : state) {
         lo_message message = lo_message_new();
         lo_message_add_string(message, "test");
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
     }
 }
@@ -83,7 +84,7 @@ static void BM_liblo_serialize_string_long(benchmark::State& state) {
     for (auto _ : state) {
         lo_message message = lo_message_new();
         lo_message_add_string(message, dolorem);
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
     }
 }
@@ -102,7 +103,7 @@ static void BM_liblo_serialize_blob_small(benchmark::State& state) {
         lo_blob blob = lo_blob_new(static_cast<int32_t>(blobMessageSize), blobBuffer.data());
         lo_message message = lo_message_new();
         lo_message_add_blob(message, blob);
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
         lo_blob_free(blob);
     }
@@ -123,7 +124,7 @@ static void BM_liblo_serialize_blob_medium(benchmark::State& state) {
         lo_blob blob = lo_blob_new(static_cast<int32_t>(blobMessageSize), blobBuffer.data());
         lo_message message = lo_message_new();
         lo_message_add_blob(message, blob);
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
         lo_blob_free(blob);
     }
@@ -140,7 +141,7 @@ static void BM_liblo_serialize_blob_large(benchmark::State& state) {
         lo_blob blob = lo_blob_new(blobBuffer.size(), blobBuffer.data());
         lo_message message = lo_message_new();
         lo_message_add_blob(message, blob);
-        lo_message_serialise(message, "serialize", buffer.data(), nullptr);
+        lo_message_serialise(message, "/seriaize", buffer.data(), nullptr);
         lo_message_free(message);
         lo_blob_free(blob);
     }
@@ -150,7 +151,7 @@ static void BM_liblo_deserialize_empty(benchmark::State& state) {
     std::array<char, 64> buffer;
     lo_message serialMessage = lo_message_new();
     size_t messageSize = 0;
-    lo_message_serialise(serialMessage, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(serialMessage, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(serialMessage);
 
     for (auto _ : state) {
@@ -164,7 +165,7 @@ static void BM_liblo_deserialize_int32_zero(benchmark::State& state) {
     lo_message serialMessage = lo_message_new();
     lo_message_add_int32(serialMessage, 0);
     size_t messageSize = 0;
-    lo_message_serialise(serialMessage, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(serialMessage, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(serialMessage);
 
     for (auto _ : state) {
@@ -180,7 +181,7 @@ static void BM_liblo_deserialize_int32_series(benchmark::State& state) {
         lo_message_add_int32(serialMessage, i);
     }
     size_t messageSize = 0;
-    lo_message_serialise(serialMessage, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(serialMessage, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(serialMessage);
 
     for (auto _ : state) {
@@ -194,7 +195,7 @@ static void BM_liblo_deserialize_float_zero(benchmark::State& state) {
     lo_message serialMessage = lo_message_new();
     lo_message_add_float(serialMessage, 0.0f);
     size_t messageSize = 0;
-    lo_message_serialise(serialMessage, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(serialMessage, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(serialMessage);
 
     for (auto _ : state) {
@@ -210,7 +211,7 @@ static void BM_liblo_deserialize_float_series(benchmark::State& state) {
         lo_message_add_float(serialMessage, static_cast<float>(i));
     }
     size_t messageSize = 0;
-    lo_message_serialise(serialMessage, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(serialMessage, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(serialMessage);
 
     for (auto _ : state) {
@@ -224,7 +225,7 @@ static void BM_liblo_deserialize_string_short(benchmark::State& state) {
     lo_message serialMessage = lo_message_new();
     lo_message_add_string(serialMessage, "test");
     size_t messageSize = 0;
-    lo_message_serialise(serialMessage, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(serialMessage, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(serialMessage);
 
     for (auto _ : state) {
@@ -238,7 +239,7 @@ static void BM_liblo_deserialize_string_long(benchmark::State& state) {
     lo_message serialMessage = lo_message_new();
     lo_message_add_string(serialMessage, dolorem);
     size_t messageSize = 0;
-    lo_message_serialise(serialMessage, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(serialMessage, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(serialMessage);
 
     for (auto _ : state) {
@@ -261,7 +262,7 @@ static void BM_liblo_deserialize_blob_small(benchmark::State& state) {
     lo_message message = lo_message_new();
     lo_message_add_blob(message, blob);
     size_t messageSize = 0;
-    lo_message_serialise(message, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(message, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(message);
     lo_blob_free(blob);
 
@@ -286,7 +287,7 @@ static void BM_liblo_deserialize_blob_medium(benchmark::State& state) {
     lo_message message = lo_message_new();
     lo_message_add_blob(message, blob);
     size_t messageSize = 0;
-    lo_message_serialise(message, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(message, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(message);
     lo_blob_free(blob);
 
@@ -307,7 +308,7 @@ static void BM_liblo_deserialize_blob_large(benchmark::State& state) {
     lo_message message = lo_message_new();
     lo_message_add_blob(message, blob);
     size_t messageSize = 0;
-    lo_message_serialise(message, "serialize", buffer.data(), &messageSize);
+    lo_message_serialise(message, "/seriaize", buffer.data(), &messageSize);
     lo_message_free(message);
     lo_blob_free(blob);
 
@@ -322,7 +323,7 @@ static void BM_oscpack_serialize_empty(benchmark::State& state) {
 
     for (auto _ : state) {
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         p << osc::EndMessage;
         if (p.Data() != buffer.data()) {
             state.SkipWithError("data mismatch!");
@@ -335,7 +336,7 @@ static void BM_oscpack_serialize_int32_zero(benchmark::State& state) {
 
     for (auto _ : state) {
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         p << 0;
         p << osc::EndMessage;
         if (p.Data() != buffer.data()) {
@@ -349,7 +350,7 @@ static void BM_oscpack_serialize_int32_series(benchmark::State& state) {
 
     for (auto _ : state) {
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         for (int i = 0; i < 100; ++i) {
             p << i;
         }
@@ -365,7 +366,7 @@ static void BM_oscpack_serialize_float_zero(benchmark::State& state) {
 
     for (auto _ : state) {
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         p << 0.0f;
         p << osc::EndMessage;
         if (p.Data() != buffer.data()) {
@@ -379,7 +380,7 @@ static void BM_oscpack_serialize_float_series(benchmark::State& state) {
 
     for (auto _ : state) {
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         for (int i = 0; i < 100; ++i) {
             p << static_cast<float>(i);
         }
@@ -395,7 +396,7 @@ static void BM_oscpack_serialize_string_short(benchmark::State& state) {
 
     for (auto _ : state) {
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         p << "test";
         p << osc::EndMessage;
         if (p.Data() != buffer.data()) {
@@ -409,7 +410,7 @@ static void BM_oscpack_serialize_string_long(benchmark::State& state) {
 
     for (auto _ : state) {
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         p << dolorem;
         p << osc::EndMessage;
         if (p.Data() != buffer.data()) {
@@ -427,7 +428,7 @@ static void BM_oscpack_serialize_blob_small(benchmark::State& state) {
     for (auto _ : state) {
         osc::Blob blob(blobMessage.Data(), blobMessage.Size());
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         p << blob;
         p << osc::EndMessage;
         if (p.Data() != buffer.data()) {
@@ -449,7 +450,7 @@ static void BM_oscpack_serialize_blob_medium(benchmark::State& state) {
     for (auto _ : state) {
         osc::Blob blob(blobMessage.Data(), blobMessage.Size());
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         p << blob;
         p << osc::EndMessage;
         if (p.Data() != buffer.data()) {
@@ -468,7 +469,7 @@ static void BM_oscpack_serialize_blob_large(benchmark::State& state) {
     for (auto _ : state) {
         osc::Blob blob(blobBuffer.data(), blobBuffer.size());
         osc::OutboundPacketStream p(buffer.data(), buffer.size());
-        p << osc::BeginMessage("serialize");
+        p << osc::BeginMessage("/seriaize");
         p << blob;
         p << osc::EndMessage;
         if (p.Data() != buffer.data()) {
@@ -480,7 +481,7 @@ static void BM_oscpack_serialize_blob_large(benchmark::State& state) {
 static void BM_oscpack_deserialize_empty(benchmark::State& state) {
     std::array<char, 64> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize") << osc::EndMessage;
+    p << osc::BeginMessage("/seriaize") << osc::EndMessage;
 
     for (auto _ : state) {
         osc::ReceivedPacket message(p.Data(), p.Size());
@@ -493,7 +494,7 @@ static void BM_oscpack_deserialize_empty(benchmark::State& state) {
 static void BM_oscpack_deserialize_int32_zero(benchmark::State& state) {
     std::array<char, 64> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     p << 0;
     p << osc::EndMessage;
 
@@ -508,7 +509,7 @@ static void BM_oscpack_deserialize_int32_zero(benchmark::State& state) {
 static void BM_oscpack_deserialize_int32_series(benchmark::State& state) {
     std::array<char, 1024> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     for (int i = 0; i < 100; ++i) {
         p << i;
     }
@@ -525,7 +526,7 @@ static void BM_oscpack_deserialize_int32_series(benchmark::State& state) {
 static void BM_oscpack_deserialize_float_zero(benchmark::State& state) {
     std::array<char, 64> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     p << 0.0;
     p << osc::EndMessage;
 
@@ -540,7 +541,7 @@ static void BM_oscpack_deserialize_float_zero(benchmark::State& state) {
 static void BM_oscpack_deserialize_float_series(benchmark::State& state) {
     std::array<char, 1024> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     for (int i = 0; i < 100; ++i) {
         p << static_cast<float>(i);
     }
@@ -557,7 +558,7 @@ static void BM_oscpack_deserialize_float_series(benchmark::State& state) {
 static void BM_oscpack_deserialize_string_short(benchmark::State& state) {
     std::array<char, 64> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     p << "test";
     p << osc::EndMessage;
 
@@ -572,7 +573,7 @@ static void BM_oscpack_deserialize_string_short(benchmark::State& state) {
 static void BM_oscpack_deserialize_string_long(benchmark::State& state) {
     std::array<char, 1024> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     p << dolorem;
     p << osc::EndMessage;
 
@@ -591,7 +592,7 @@ static void BM_oscpack_deserialize_blob_small(benchmark::State& state) {
     osc::Blob blob(blobMessage.Data(), blobMessage.Size());
     std::array<char, 64> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     p << blob;
     p << osc::EndMessage;
 
@@ -614,7 +615,7 @@ static void BM_oscpack_deserialize_blob_medium(benchmark::State& state) {
     std::array<char, 1024> buffer;
     osc::Blob blob(blobMessage.Data(), blobMessage.Size());
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     p << blob;
     p << osc::EndMessage;
 
@@ -634,13 +635,282 @@ static void BM_oscpack_deserialize_blob_large(benchmark::State& state) {
     osc::Blob blob(blobBuffer.data(), blobBuffer.size());
     std::array<char, 4096> buffer;
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("serialize");
+    p << osc::BeginMessage("/seriaize");
     p << blob;
     p << osc::EndMessage;
 
     for (auto _ : state) {
         osc::ReceivedPacket message(p.Data(), p.Size());
         if (!message.IsMessage()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_serialize_empty(benchmark::State& state) {
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_int32_zero(benchmark::State& state) {
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        message.pushInt32(0);
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_int32_series(benchmark::State& state) {
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        for (int i = 0; i < 100; ++i) {
+            message.pushInt32(i);
+        }
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_float_zero(benchmark::State& state) {
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        message.pushFloat(0.0f);
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_float_series(benchmark::State& state) {
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        for (int i = 0; i < 100; ++i) {
+            message.pushFloat(static_cast<float>(i));
+        }
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_string_short(benchmark::State& state) {
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        message.pushStr("test");
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_string_long(benchmark::State& state) {
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        message.pushStr(dolorem);
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_blob_small(benchmark::State& state) {
+    oscpkt::Message blobMessage("blobMessage");
+    blobMessage.pushInt32(23);
+    blobMessage.pushFloat(14.0f);
+    oscpkt::PacketWriter blobPacket;
+    blobPacket.addMessage(blobMessage);
+
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        message.pushBlob(blobPacket.packetData(), blobPacket.packetSize());
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_blob_medium(benchmark::State& state) {
+    oscpkt::Message blobMessage("blobMessage");
+    for (int i = 0; i < 100; ++i) {
+        blobMessage.pushInt32(i);
+    }
+    oscpkt::PacketWriter blobPacket;
+    blobPacket.addMessage(blobMessage);
+
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        message.pushBlob(blobPacket.packetData(), blobPacket.packetSize());
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_serialize_blob_large(benchmark::State& state) {
+    std::array<char, 2048> blobBuffer;
+    for (int i = 0; i < 2048; ++i) {
+        blobBuffer[i] = static_cast<char>(i);
+    }
+
+    for (auto _ : state) {
+        oscpkt::Message message("/seriaize");
+        message.pushBlob(blobBuffer.data(), blobBuffer.size());
+        oscpkt::PacketWriter pw;
+        pw.addMessage(message);
+    }
+}
+
+static void BM_oscpkt_deserialize_empty(benchmark::State& state) {
+    oscpkt::Message serialMessage("/seriaize");
+    oscpkt::PacketWriter pw;
+    pw.addMessage(serialMessage);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_int32_zero(benchmark::State& state) {
+    oscpkt::Message serialMessage("/seriaize");
+    serialMessage.pushInt32(0);
+    oscpkt::PacketWriter pw;
+    pw.addMessage(serialMessage);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_int32_series(benchmark::State& state) {
+    oscpkt::Message serialMessage("/seriaize");
+    for (int i = 0; i < 100; ++i) {
+        serialMessage.pushInt32(i);
+    }
+    oscpkt::PacketWriter pw;
+    pw.addMessage(serialMessage);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_float_zero(benchmark::State& state) {
+    oscpkt::Message serialMessage("/seriaize");
+    serialMessage.pushFloat(0.0f);
+    oscpkt::PacketWriter pw;
+    pw.addMessage(serialMessage);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_float_series(benchmark::State& state) {
+    oscpkt::Message serialMessage("/seriaize");
+    for (int i = 0; i < 100; ++i) {
+        serialMessage.pushFloat(static_cast<float>(i));
+    }
+    oscpkt::PacketWriter pw;
+    pw.addMessage(serialMessage);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_string_short(benchmark::State& state) {
+    oscpkt::Message serialMessage("/seriaize");
+    serialMessage.pushStr("test");
+    oscpkt::PacketWriter pw;
+    pw.addMessage(serialMessage);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_string_long(benchmark::State& state) {
+    oscpkt::Message serialMessage("/seriaize");
+    serialMessage.pushStr(dolorem);
+    oscpkt::PacketWriter pw;
+    pw.addMessage(serialMessage);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_blob_small(benchmark::State& state) {
+    oscpkt::Message blobMessage("blobMessage");
+    blobMessage.pushInt32(23);
+    blobMessage.pushFloat(14.0f);
+    oscpkt::PacketWriter blobPacket;
+    blobPacket.addMessage(blobMessage);
+    oscpkt::Message message("/seriaize");
+    message.pushBlob(blobPacket.packetData(), blobPacket.packetSize());
+    oscpkt::PacketWriter pw;
+    pw.addMessage(message);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_blob_medium(benchmark::State& state) {
+    oscpkt::Message blobMessage("blobMessage");
+    for (int i = 0; i < 100; ++i) {
+        blobMessage.pushInt32(i);
+    }
+    oscpkt::PacketWriter blobPacket;
+    blobPacket.addMessage(blobMessage);
+    oscpkt::Message message("/seriaize");
+    message.pushBlob(blobPacket.packetData(), blobPacket.packetSize());
+    oscpkt::PacketWriter pw;
+    pw.addMessage(message);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
+            state.SkipWithError("not message!");
+        }
+    }
+}
+
+static void BM_oscpkt_deserialize_blob_large(benchmark::State& state) {
+    std::array<char, 2048> blobBuffer;
+    for (int i = 0; i < 2048; ++i) {
+        blobBuffer[i] = static_cast<char>(i);
+    }
+    oscpkt::Message message("/seriaize");
+    message.pushBlob(blobBuffer.data(), blobBuffer.size());
+    oscpkt::PacketWriter pw;
+    pw.addMessage(message);
+
+    for (auto _ : state) {
+        oscpkt::PacketReader reader(pw.packetData(), pw.packetSize());
+        if (!reader.isOk()) {
             state.SkipWithError("not message!");
         }
     }
@@ -689,5 +959,27 @@ BENCHMARK(BM_oscpack_deserialize_string_long);
 BENCHMARK(BM_oscpack_deserialize_blob_small);
 BENCHMARK(BM_oscpack_deserialize_blob_medium);
 BENCHMARK(BM_oscpack_deserialize_blob_large);
+
+BENCHMARK(BM_oscpkt_serialize_empty);
+BENCHMARK(BM_oscpkt_serialize_int32_zero);
+BENCHMARK(BM_oscpkt_serialize_int32_series);
+BENCHMARK(BM_oscpkt_serialize_float_zero);
+BENCHMARK(BM_oscpkt_serialize_float_series);
+BENCHMARK(BM_oscpkt_serialize_string_short);
+BENCHMARK(BM_oscpkt_serialize_string_long);
+BENCHMARK(BM_oscpkt_serialize_blob_small);
+BENCHMARK(BM_oscpkt_serialize_blob_medium);
+BENCHMARK(BM_oscpkt_serialize_blob_large);
+
+BENCHMARK(BM_oscpkt_deserialize_empty);
+BENCHMARK(BM_oscpkt_deserialize_int32_zero);
+BENCHMARK(BM_oscpkt_deserialize_int32_series);
+BENCHMARK(BM_oscpkt_deserialize_float_zero);
+BENCHMARK(BM_oscpkt_deserialize_float_series);
+BENCHMARK(BM_oscpkt_deserialize_string_short);
+BENCHMARK(BM_oscpkt_deserialize_string_long);
+BENCHMARK(BM_oscpkt_deserialize_blob_small);
+BENCHMARK(BM_oscpkt_deserialize_blob_medium);
+BENCHMARK(BM_oscpkt_deserialize_blob_large);
 
 BENCHMARK_MAIN();

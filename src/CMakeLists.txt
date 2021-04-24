@@ -12,6 +12,7 @@ target_link_libraries(cppbench
     ${EXT_INSTALL_DIR}/lib/liblo.${LIBLO_LIBRARY_SUFFIX}
     benchmark::benchmark
     oscpack
+    oscpkt
 )
 
 add_dependencies(cppbench

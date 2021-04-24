@@ -32,3 +32,8 @@ include_directories(oscpack_1_1_0)
 add_library(oscpack STATIC "OSCPackBuild.cpp")
 target_include_directories(oscpack INTERFACE oscpack_1_1_0)
 
+### oscpkt (header only)
+include_directories(oscpkt-1.2)
+add_library(oscpkt INTERFACE "oscpkt-1.2/oscpkt.hh")
+target_include_directories(oscpkt INTERFACE oscpkt-1.2)
+
