@@ -27,3 +27,8 @@ ExternalProject_Add(liblo
 set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON CACHE BOOL "Allow benchmark to download dependencies for building.")
 add_subdirectory(benchmark)
 
+### oscpack
+include_directories(oscpack_1_1_0)
+add_library(oscpack STATIC "OSCPackBuild.cpp")
+target_include_directories(oscpack INTERFACE oscpack_1_1_0)
+
