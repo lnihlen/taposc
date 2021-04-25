@@ -13,6 +13,7 @@ target_link_libraries(cppbench
     benchmark::benchmark
     oscpack
     oscpkt
+    oscpp
 )
 
 add_dependencies(cppbench
