@@ -19,3 +19,15 @@ target_link_libraries(cppbench
 add_dependencies(cppbench
     liblo-install
 )
+
+add_executable(e2e
+    e2e.cpp
+)
+
+target_link_libraries(e2e
+    ${EXT_INSTALL_DIR}/lib/liblo.${LIBLO_LIBRARY_SUFFIX}
+    gflags
+    oscpack
+    oscpkt
+    oscpp
+)

@@ -40,3 +40,8 @@ target_include_directories(oscpkt INTERFACE oscpkt-1.2)
 add_library(oscpp INTERFACE)
 target_include_directories(oscpp INTERFACE oscpp/include)
 
+#### gflags
+set(GFLAGS_BUILD_STATIC_LIBS ON CACHE BOOL "build gflags as a static library")
+set(GFLAGS_BUILD_gflags_LIB ON CACHE BOOL "build multithreaded gflags library")
+add_subdirectory(gflags)
+
