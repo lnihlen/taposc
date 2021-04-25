@@ -33,7 +33,10 @@ add_library(oscpack STATIC "OSCPackBuild.cpp")
 target_include_directories(oscpack INTERFACE oscpack_1_1_0)
 
 ### oscpkt (header only)
-include_directories(oscpkt-1.2)
-add_library(oscpkt INTERFACE "oscpkt-1.2/oscpkt.hh")
+add_library(oscpkt INTERFACE)
 target_include_directories(oscpkt INTERFACE oscpkt-1.2)
+
+### oscpp (header only)
+add_library(oscpp INTERFACE)
+target_include_directories(oscpp INTERFACE oscpp/include)
 
